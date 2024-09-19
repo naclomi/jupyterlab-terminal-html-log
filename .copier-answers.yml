@@ -1,0 +1,15 @@
+# Changes here will be overwritten by Copier; NEVER EDIT MANUALLY
+_commit: v4.3.5
+_src_path: https://github.com/jupyterlab/extension-template
+author_email: naomila@uw.edu
+author_name: jupyterlab-terminal-html-log
+has_binder: false
+has_settings: false
+kind: frontend
+labextension_name: jupyterlab_terminal_html_log
+project_short_description: Add HTML logging capabilities to JupyterLab's integrated
+    terminal
+python_name: jupyterlab_terminal_html_log
+repository: https://github.com/naclomi/jupterlab-terminal-html-log
+test: true
+

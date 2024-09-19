@@ -1,0 +1,12 @@
+{
+  "jupyter.lab.menus": {
+    "context": [
+      {
+        "command": "terminal:log-to-html",
+        "selector": ".jp-Terminal"
+      }
+    ]
+  },
+  "additionalProperties": false,
+  "type": "object"
+}

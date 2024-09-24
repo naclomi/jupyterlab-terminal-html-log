@@ -59,9 +59,11 @@
     "dependencies": {
         "@jupyterlab/application": "^4.2.5",
         "@jupyterlab/apputils": "^4.3.5",
-        "@jupyterlab/filebrowser": "^4.2.5",
         "@jupyterlab/docmanager": "^4.2.5",
-        "@lumino/widgets": "^2.5.0"
+        "@jupyterlab/filebrowser": "^4.2.5",
+        "@jupyterlab/terminal": "^4.2.5",
+        "@lumino/widgets": "^2.5.0",
+        "@xterm/xterm": "~5.5.0"
     },
     "devDependencies": {
         "@jupyterlab/builder": "^4.0.0",

@@ -11,3 +11,5 @@
 
 
 - https://github.com/naclomi/hyper-html-log/blob/main/index.js#L151
+
+- https://discourse.jupyter.org/t/what-is-the-best-approach-in-order-to-write-binary-data-to-a-file-from-an-extension/12794

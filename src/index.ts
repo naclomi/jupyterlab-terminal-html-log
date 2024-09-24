@@ -3,7 +3,7 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import { ICommandPalette } from '@jupyterlab/apputils';
+import { ICommandPalette, InputDialog, showErrorMessage } from '@jupyterlab/apputils';
 
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { FileDialog } from '@jupyterlab/filebrowser';
@@ -21,18 +21,38 @@ const logger: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(command, {
       label: 'Toggle logging to HTML file',
       execute: async () => {
+
+        // Get log path
+        let log_path = null;
+
         const dialog = FileDialog.getOpenFiles({
           "manager": docManager,
-          // filter: model => model.type == 'notebook' // optional (model: Contents.IModel) => boolean
+          "title": "Select log destination",
+          "label": "Choose a pre-existing file to overwrite or a directory to create a new file within it",
+          "filter": model => {return (model.mimetype === 'text/html' || model.type === 'directory') ? {} : null}
         });
-
-        const result = await dialog;
-
-        if(result.button.accept){
-          let files = result.value;
-          console.log(files);
+        const file_picker_result = await dialog;
+        if(file_picker_result.button.accept){
+          if (file_picker_result.value!.length > 1) {
+            showErrorMessage("Too many items selected", "Please select only one file or directory");
+          } else {
+            let selected = file_picker_result.value![0];
+            if (selected.type == "directory") {
+              const file_name_result = await InputDialog.getText({
+                title: 'Enter a filename for the log',
+                label: selected.path + "/"
+              });
+              if (file_name_result.button.accept) {
+                log_path = selected.path + "/" + file_name_result.value;
+              }
+            } else {
+              log_path = selected.path;
+            }
+          }
         }
-
+        if (log_path) {
+          console.log(log_path);
+        }
       }
     });
 

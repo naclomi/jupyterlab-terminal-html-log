@@ -3,7 +3,7 @@ import {
   JupyterFrontEndPlugin
 } from '@jupyterlab/application';
 
-import { MainAreaWidget, ICommandPalette, InputDialog, showErrorMessage } from '@jupyterlab/apputils';
+import { ICommandPalette, InputDialog, showErrorMessage } from '@jupyterlab/apputils';
 
 import { ITerminalTracker, ITerminal } from '@jupyterlab/terminal';
 
@@ -14,13 +14,9 @@ import type {
   Terminal as Xterm
 } from '@xterm/xterm';
 
-function getInternalXtermWidget(termWidget: MainAreaWidget<ITerminal.ITerminal>): Xterm | undefined {
-  if (termWidget.layout) {
-    for (let widget of termWidget.layout) {
-      if ("_term" in widget) {
-        return widget._term as Xterm
-      }
-    }
+function getInternalXtermWidget(termWidget: ITerminal.ITerminal): Xterm | undefined {
+  if ("_term" in termWidget) {
+    return termWidget._term as Xterm
   }
 }
 
@@ -69,13 +65,22 @@ const logger: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(command, {
       label: 'Toggle logging to HTML file',
       execute: async () => {
-
         console.log(termTracker.currentWidget);
         if (termTracker.currentWidget) {
-          termTracker.currentWidget.disposed.connect((sender, args) => {console.log(sender, args);});
-          termTracker.currentWidget.content.session.messageReceived.connect((sender, args) => {console.log(sender, args);});
-
-          console.log(getInternalXtermWidget(termTracker.currentWidget))
+          // termTracker.currentWidget.disposed.connect((sender, args) => {console.log(sender, args);});
+          // termTracker.currentWidget.content.session.messageReceived.connect((sender, args) => {console.log(sender, args);});
+          const xt = getInternalXtermWidget(termTracker.currentWidget.content);
+          console.log(xt);
+          // Identify terminal by termTracker.currentWidget.content.session.name
+          // TODO: careful about widget lifecycle/disposals, this is technically
+          //       an internal widget member and we don't know how persistent it is
+          if (xt) {
+            xt.onLineFeed(()=>{
+              if (!xt.modes.applicationCursorKeysMode) {
+                console.log(":o)");
+              }
+            });
+          }
         }
 
         // Get log path

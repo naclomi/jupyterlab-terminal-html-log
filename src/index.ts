@@ -8,6 +8,7 @@ import { ICommandPalette, InputDialog, showErrorMessage } from '@jupyterlab/appu
 import { IDocumentManager } from '@jupyterlab/docmanager';
 import { FileDialog } from '@jupyterlab/filebrowser';
 
+
 /**
  * Initialization data for the jupyterlab_terminal_html_log extension.
  */
@@ -46,12 +47,22 @@ const logger: JupyterFrontEndPlugin<void> = {
                 log_path = selected.path + "/" + file_name_result.value;
               }
             } else {
-              log_path = selected.path;
+              log_path = "/" + selected.path;
             }
+            console.log(selected);
           }
         }
+
+        // Start logger
         if (log_path) {
           console.log(log_path);
+          console.log(docManager.services)
+          docManager.services.contents.save(log_path, {
+            content: "foo",
+            format: "text",
+            mimetype: "text/html",
+            type: "file"
+          })
         }
       }
     });

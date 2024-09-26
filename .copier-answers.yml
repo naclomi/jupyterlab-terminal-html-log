@@ -10,6 +10,6 @@ labextension_name: jupyterlab_terminal_html_log
 project_short_description: Add HTML logging capabilities to JupyterLab's integrated
     terminal
 python_name: jupyterlab_terminal_html_log
-repository: https://github.com/naclomi/jupterlab-terminal-html-log
+repository: https://github.com/naclomi/jupyterlab-terminal-html-log
 test: true
 

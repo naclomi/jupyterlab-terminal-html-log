@@ -1,6 +1,6 @@
 # jupyterlab_terminal_html_log
 
-[![Github Actions Status](https://github.com/naclomi/jupterlab-terminal-html-log/workflows/Build/badge.svg)](https://github.com/naclomi/jupterlab-terminal-html-log/actions/workflows/build.yml)
+[![Github Actions Status](https://github.com/naclomi/jupyterlab-terminal-html-log/workflows/Build/badge.svg)](https://github.com/naclomi/jupyterlab-terminal-html-log/actions/workflows/build.yml)
 
 Add HTML logging capabilities to JupyterLab's integrated terminal
 

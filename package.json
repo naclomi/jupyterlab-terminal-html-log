@@ -7,9 +7,9 @@
         "jupyterlab",
         "jupyterlab-extension"
     ],
-    "homepage": "https://github.com/naclomi/jupterlab-terminal-html-log",
+    "homepage": "https://github.com/naclomi/jupyterlab-terminal-html-log",
     "bugs": {
-        "url": "https://github.com/naclomi/jupterlab-terminal-html-log/issues"
+        "url": "https://github.com/naclomi/jupyterlab-terminal-html-log/issues"
     },
     "license": "BSD-3-Clause",
     "author": {
@@ -27,7 +27,7 @@
     "style": "style/index.css",
     "repository": {
         "type": "git",
-        "url": "https://github.com/naclomi/jupterlab-terminal-html-log.git"
+        "url": "https://github.com/naclomi/jupyterlab-terminal-html-log.git"
     },
     "scripts": {
         "build": "jlpm build:lib && jlpm build:labextension:dev",

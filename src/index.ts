@@ -270,12 +270,13 @@ const logger: JupyterFrontEndPlugin<void> = {
     app.commands.addCommand(command, {
       label: 'Log to HTML file',
       isToggled: () => {
-        if (termTracker.currentWidget !== null) {
-          const session_name = termTracker.currentWidget.content.session.name;
-          return session_name in loggers;
-        } else {
-          return false;
-        }
+        return termTracker.currentWidget !== null &&
+               termTracker.currentWidget === app.shell.currentWidget &&
+               termTracker.currentWidget.content.session.name in loggers;
+      },
+      isEnabled: () => {
+        return termTracker.currentWidget !== null &&
+               termTracker.currentWidget === app.shell.currentWidget;
       },
       execute: async () => {
         if (termTracker.currentWidget) {

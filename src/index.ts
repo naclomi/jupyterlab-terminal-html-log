@@ -47,7 +47,6 @@ async function getLogDestination(docManager: IDocumentManager): Promise<string |
       } else {
         log_path = "/" + selected.path;
       }
-      console.log(selected);
     }
   }
   return log_path
@@ -121,9 +120,6 @@ class XtermTracker {
   constructor(
     session_id: string,
     xt: Xterm,
-    bgcolor: string,
-    fontfamily: string,
-    fontweight: string,
     dump_callback: (data: string) => void
   ){
     this.session_id = session_id;
@@ -135,19 +131,9 @@ class XtermTracker {
       this.xt.onKey(this.onKey.bind(this))
     ];
     this.dump_callback = dump_callback;
-    this.log =  `
-<html>
-  <head>
-    <style>
-      body {
-        background: ${bgcolor};
-        font-family: ${fontfamily};
-        font-weight: ${fontweight};
-        margin: 1em;
-      }
-    </style>
-  </head>
-  <body><pre>`;
+    this.log = "";
+    this.onLineFeed();
+    this.dump_callback(this.dump());
   }
 
   dispose(): void {
@@ -160,7 +146,19 @@ class XtermTracker {
   }
 
   dump(): string {
-    return this.log + "</pre></body></html>";
+    return `
+<html>
+  <head>
+    <style>
+      body {
+        background: ${this.xt.options.theme?.background || "#000000"};
+        font-family: ${this.xt.options.fontFamily || "monospace"};
+        font-weight: ${this.xt.options.fontWeight || "normal"};
+        margin: 1em;
+      }
+    </style>
+  </head>
+  <body><pre>` + this.log + "</pre></body></html>";
   }
 
   rewind(num_lines: number): void {
@@ -172,7 +170,6 @@ class XtermTracker {
   }
 
   onKey(event: {key: string, domEvent: KeyboardEvent}) {
-    console.log(event);
     if (event.key === "\r" || event.key === "\n") {
       setTimeout(()=>{
         this.dump_callback(this.dump());
@@ -187,8 +184,8 @@ class XtermTracker {
     if (!this.xt.modes.applicationCursorKeysMode) {
       const buffer = this.xt.buffer.active;
       const theme = (this.xt.options.theme === undefined) ?
-                        this.xt.options.theme :
-                        {"foreground": "#ffffff", "background":"#000000"};
+                        {"foreground": "#ffffff", "background":"#000000"} :
+                        this.xt.options.theme;
       const bufferMaxY = buffer.baseY + buffer.cursorY - 1;
       if (this.lastLogLine > bufferMaxY) {
         this.rewind(this.lastLogLine - bufferMaxY)
@@ -226,10 +223,10 @@ class XtermTracker {
           }
 
           if (fgColorRaw !== lastFgColorRaw || bgColorRaw !== lastBgColorRaw || bold != lastBold) {
-            let fgColor = fgColorRaw === -1 ? theme!.foreground :
+            let fgColor = fgColorRaw === -1 ? theme.foreground :
                             fgColorRaw <= 255 ? DEFAULT_ANSI_COLORS[fgColorRaw] :
                                                   fgColorRaw;
-            let bgColor = bgColorRaw === -1 ? theme!.background :
+            let bgColor = bgColorRaw === -1 ? theme.background :
                             bgColorRaw <= 255 ? DEFAULT_ANSI_COLORS[bgColorRaw] :
                                                   bgColorRaw;
             let fontProps = ""
@@ -271,7 +268,15 @@ const logger: JupyterFrontEndPlugin<void> = {
 
     const command: string = 'terminal:log-to-html';
     app.commands.addCommand(command, {
-      label: 'Toggle logging to HTML file',
+      label: 'Log to HTML file',
+      isToggled: () => {
+        if (termTracker.currentWidget !== null) {
+          const session_name = termTracker.currentWidget.content.session.name;
+          return session_name in loggers;
+        } else {
+          return false;
+        }
+      },
       execute: async () => {
         if (termTracker.currentWidget) {
           const session_name = termTracker.currentWidget.content.session.name;
@@ -291,14 +296,9 @@ const logger: JupyterFrontEndPlugin<void> = {
 
             // Start logger
             if (log_path !== null && xt) {
-              // console.log(log_path);
-              // console.log(docManager.services)
               loggers[session_name] = new XtermTracker(
                 session_name,
                 xt,
-                "#00FF00",
-                "sans-serif",
-                "normal",
                 (data) => {
                   docManager.services.contents.save(log_path!, {
                     content: data,
@@ -308,6 +308,10 @@ const logger: JupyterFrontEndPlugin<void> = {
                   })
                 }
               );
+              termTracker.currentWidget.content.disposed.connect(() => {
+                loggers[session_name].dispose();
+                delete loggers[session_name];
+              })
             }
 
           }

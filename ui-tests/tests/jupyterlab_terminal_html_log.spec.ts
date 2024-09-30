@@ -6,28 +6,29 @@ import { expect, test } from '@jupyterlab/galata';
 const TERMINAL_SELECTOR = '.jp-Terminal';
 const COMMAND_LABEL = 'Log to HTML file';
 
-const LOGGED_TEXT = "foo bar bazz";
-const NOT_LOGGED_TEXT = "womp murrr";
+const LOGGED_TEXT = 'foo bar bazz';
+const NOT_LOGGED_TEXT = 'womp murrr';
 
-const LOG_FILE_NAME = "test_log.html";
+const LOG_FILE_NAME = 'test_log.html';
 
 test('should log terminal activity to an html file', async ({ page }) => {
   // Open a terminal
   await page.menu.clickMenuItem('File>New>Terminal');
   await page.locator(TERMINAL_SELECTOR).waitFor();
-  let terminal = page.locator(TERMINAL_SELECTOR);
+  const terminal = page.locator(TERMINAL_SELECTOR);
   await terminal.waitFor();
-
 
   // Find and click the logging command in the terminal's context menu
   await terminal.click({
     button: 'right'
   });
-  await expect(page.getByRole('menuitem', { name: COMMAND_LABEL })).toBeVisible();
+  await expect(
+    page.getByRole('menuitem', { name: COMMAND_LABEL })
+  ).toBeVisible();
   await page.getByRole('menuitem', { name: COMMAND_LABEL }).click();
 
   // Accept the default folder to save the log file into
-  await page.getByRole('button', { name: "Select" }).click();
+  await page.getByRole('button', { name: 'Select' }).click();
 
   // Name the file "test.html"
   await page.locator('.jp-Dialog >> input[type="text"]').waitFor();
@@ -56,10 +57,9 @@ test('should log terminal activity to an html file', async ({ page }) => {
 
   // Load logged output
   const fs_log_path = path.join(await page.getServerRoot(), LOG_FILE_NAME);
-  const log_data = fs.readFileSync(fs_log_path, {encoding: "utf8"});
+  const log_data = fs.readFileSync(fs_log_path, { encoding: 'utf8' });
 
   // Confirm contents
   expect([...log_data.matchAll(LOGGED_TEXT)].length).toEqual(2);
   expect([...log_data.matchAll(NOT_LOGGED_TEXT)].length).toEqual(0);
-
 });
